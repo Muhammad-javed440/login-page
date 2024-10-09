@@ -12,22 +12,31 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import Link from "next/link";
-import { loginSchema } from "@/lib/validation/schema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { registerSchema } from "@/lib/validation/schema";
 
-export default function Home() {
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+export default function Register() {
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    // defaultValues: {
+    //   email: "",
+    //   password: "",
+    //   role: "",
+    // },
   });
 
-  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+  console.log("🚀 ~ Register ~ form:", form.getValues());
+
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     try {
       // API call to login
-      await fetch("/api/login", {
+      await fetch("/api/register", {
         method: "POST",
         body: JSON.stringify(data),
         cache: "no-store",
@@ -41,7 +50,7 @@ export default function Home() {
     <div className="grid  items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="border p-5 min-w-96 bg-slate-50 rounded-md">
         <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight lg:text-2xl text-center">
-          Login
+          Register
         </h1>
         <Form {...form}>
           <form
@@ -84,13 +93,29 @@ export default function Home() {
                 </FormItem>
               )}
             />
-            <Link
-              href={"/register"}
-              className="text-blue-500 text-sm text-right"
-            >
-              Don&apos;t have account? Register
-            </Link>
-            <Button type="submit">Login</Button>
+            <FormField
+              name="role"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="super-admin">Super Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Register</Button>
           </form>
         </Form>
       </div>
